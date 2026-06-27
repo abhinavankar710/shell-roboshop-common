@@ -22,30 +22,15 @@ N="\e[0m"
 
 spinner() {
     local pid=$1
-    local delay=0.04  # High speed for fluid, buttery motion
-    local i=0
-    
-    # 26-STAGE HORIZONTAL VECTOR SHIFT: High frame count for seamless wave cascading
-    local spinstr=(
-        '⠁  ' '⠃  ' '⠇  ' '⠇⠁ ' '⠇⠃ ' '⠇⠇ ' '⠇⠇⠁' '⠇⠇⠃' '⠇⠇⠇' 
-        '⢎⠇⠇' '⢱⢎⠇' '⢀⢱⢎' ' ⢀⢱' '  ⢀' '   ' '⢀  ' '⢄⢀ ' 
-        '⢆⢄⢀' '⢎⢆⢄' '⠇⢎⢆' '⠇⠇⢎' '⠇⠇⠇' '⠖⠇⠇' '⠤⠖⠇' ' ⠤⠖' '  ⠤'
-    )
-    local frame_count=${#spinstr[@]}
-    
-    # Hide the cursor safely
+    local delay=0.07
+    local spinstr='|/-\'
     tput civis 2>/dev/null 
-
-    # Runs flawlessly frame-by-frame with zero sequence stutters
-    while kill -0 "$pid" 2>/dev/null; do
-        # Your exact text layout preserved. Replaces %s cleanly with the multi-dot wave
-        printf "\r$2... [%s]" "${spinstr[i]}"
-        
-        i=$(( (i + 1) % frame_count ))
-        sleep $delay
+    while kill -0 $pid 2>/dev/null; do
+        for i in $(seq 0 $((${#spinstr}-1))); do
+            printf "\r$2... [%c]" "${spinstr:$i:1}"
+            sleep $delay
+        done
     done
-    
-    # Wipe the trailing animation cleanly right before validation prints
     printf "\r\033[K"
     tput cnorm 2>/dev/null 
 }
