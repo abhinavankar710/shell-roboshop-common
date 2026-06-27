@@ -22,18 +22,20 @@ N="\e[0m"
 
 spinner() {
     local pid=$1
-    local delay=0.07
-    local spinstr='|/-\'
+    local delay=0.1
+    local spinstr='🌑🌒🌓🌔🌕🌖🌗🌘' 
     tput civis 2>/dev/null 
     while kill -0 $pid 2>/dev/null; do
-        for i in $(seq 0 $((${#spinstr}-1))); do
-            printf "\r$2... [%c]" "${spinstr:$i:1}"
+        for char in "${spinstr[@]}"; do
+            printf "\r$2... [%s]" "$char"
             sleep $delay
+            kill -0 $pid 2>/dev/null || break
         done
     done
     printf "\r\033[K"
     tput cnorm 2>/dev/null 
 }
+
 
 VALIDATE(){
     if [ $1 -ne 0 ]; then
