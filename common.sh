@@ -22,26 +22,28 @@ N="\e[0m"
 
 spinner() {
     local pid=$1
-    local delay=0.1
+    local delay=0.07 # Faster delay so Sonic actually looks like he is sprinting
     local i=0
     
-    # 8-Stage sweeping radial dot pulse
-    local spinstr=('⢄⢂⢁⡈' '⡈⢁⢂⢄' '⠠⠐⠈⢀' '⢀⠈⠐⠠' '⢄⢂⢁⡈' '⡈⢁⢂⢄' '⠠⠐⠈⢀' '⢀⠈⠐⠠')
+    # SONIC RUNNING LAYOUT: Fixed body (o) with legs cycling in a rapid clockwise blur
+    local spinstr=('o▘' 'o▝' 'o⏵' 'o▗' 'o▖' 'o⏴')
     local frame_count=${#spinstr[@]}
     
+    # Hide cursor safely
     tput civis 2>/dev/null 
 
-    while kill -0 $pid 2>/dev/null; do
-        printf "\r%s%s" "$2" "${spinstr[$i]}"
+    while kill -0 "$pid" 2>/dev/null; do
+        # Keeps your original format logic completely intact: message...Sonic
+        printf "\r%s...%s" "$2" "${spinstr[$i]}"
+        
         i=$(( (i + 1) % frame_count ))
         sleep $delay
     done
     
+    # Clear the trailing animation right before exit
     printf "\r\033[K"
     tput cnorm 2>/dev/null 
 }
-
-
 
 VALIDATE(){
     if [ $1 -ne 0 ]; then
