@@ -23,29 +23,24 @@ N="\e[0m"
 spinner() {
     local pid=$1
     local text=$2
-    local delay=0.08  # Slighly faster delay makes this specific block roll look like a fluid liquid wheel
+    local delay=0.1
     local i=0
     
-    # ALTERED DESIGN: Re-ordered for a seamless, continuous clockwise rolling circle
-    local spinstr=('▘' '▝' '▗' '▖' '▚' '▞' '▙' '▜' '▟' '▛' '█')
+    # 6-Stage complex wave moving across the dots
+    local spinstr=('·..' '.·.' '..·' '●..' '.●.' '..●')
     local frame_count=${#spinstr[@]}
     
-    # Hide cursor and suppress errors safely
     tput civis 2>/dev/null 
 
     while kill -0 "$pid" 2>/dev/null; do
-        # Format: message...[Cyan Spinner Element]
-        # \e[36m turns the spinner Cyan, \e[0m resets it back to normal
-        printf "\r\033[K%b...\e[36m%s\e[0m" "$text" "${spinstr[$i]}"
+        # Format: message followed immediately by the moving dot frames
+        printf "\r\033[K%b%s" "$text" "${spinstr[$i]}"
         
         i=$(( (i + 1) % frame_count ))
         sleep $delay
     done
     
-    # Erase the line completely before exiting so VALIDATE outputs cleanly
     printf "\r\033[K"
-    
-    # Restore the cursor to normal
     tput cnorm 2>/dev/null 
 }
 
