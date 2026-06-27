@@ -31,7 +31,7 @@ if [ $? -ne 0 ]; then
     # --- THE FIX ENDS HERE ---
     
 else
-    echo -e "MongoDB Client already exists...${Y}SKIPPING${N} installation of MongoDB Client" | tee -a $LOG_FILE
+    echo -e "MongoDB Client already exists...${Y}Skipping${N}" | tee -a $LOG_FILE
 fi
 
 INDEX=$(mongosh $MONGODB_HOST --quiet --eval "db.getMongo().getDBNames().indexOf('catalogue')" 2>>$LOG_FILE)
@@ -42,7 +42,7 @@ if [ $INDEX -lt 0 ]; then
     wait $pid
     VALIDATE $? "Importing Master Data to MongoDB"
 else
-    echo -e "Master data already exists...${Y}SKIPPING${N}" | tee -a $LOG_FILE
+    echo -e "Master data already exists...${Y}Skipping${N}" | tee -a $LOG_FILE
 fi
 
 app_restart
