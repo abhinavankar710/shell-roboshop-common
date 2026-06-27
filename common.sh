@@ -23,19 +23,12 @@ N="\e[0m"
 spinner() {
     local pid=$1
     local delay=0.1
-    
-    # 1. Defined as an array so Bash keeps each emoji intact
     local -a spinstr=(🌑 🌒 🌓 🌔 🌕 🌖 🌗 🌘)
-    
     tput civis 2>/dev/null 
     while kill -0 $pid 2>/dev/null; do
-        # 2. Directly loop over the array elements
         for char in "${spinstr[@]}"; do
-            # 3. Use %s instead of %c to safely print wide characters
             printf "\r$2... [%s]" "$char"
             sleep $delay
-            
-            # Quick check to exit early if the process finishes mid-loop
             kill -0 $pid 2>/dev/null || break
         done
     done
