@@ -27,7 +27,7 @@ spinner() {
     tput civis 2>/dev/null 
     while kill -0 $pid 2>/dev/null; do
         for char in "${spinstr[@]}"; do
-            printf "\r$2... [%s]" "$char"
+            printf "\r$2...%s" "$char"
             sleep $delay
             kill -0 $pid 2>/dev/null || break
         done
