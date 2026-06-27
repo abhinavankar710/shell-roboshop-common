@@ -28,7 +28,7 @@ if [ $? -ne 0 ]; then
     # --- THE FIX ENDS HERE ---
     
 else
-    echo -e "MongoDB already exists$Y SKIPPING$N installation of MongoDB" | tee -a $LOG_FILE
+    echo -e "MongoDB already exists...{$Y}SKIPPING{$N}" | tee -a $LOG_FILE
 fi
 
 systemctl enable mongod &>>$LOG_FILE
