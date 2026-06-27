@@ -14,6 +14,7 @@ SCRIPT_DIR=$PWD
 LOG_FILE="$LOGS_FOLDER/$SCRIPT_NAME.log"
 mkdir -p $LOGS_FOLDER
 START_TIME=$(date +%s)
+MONGODB_HOST=mongodb.ankar.space
 echo "Script execution started at: $(date)" | tee -a $LOG_FILE
 R="\e[31m"
 G="\e[32m"
@@ -47,6 +48,84 @@ VALIDATE(){
     fi
 }
 
+nodejs_setup(){
+    dnf module disable nodejs -y &>>$LOG_FILE &
+    pid=$! 
+    spinner $pid "Disabling Default NodeJS Module"
+    wait $pid
+    dnf module enable nodejs:20 -y &>>$LOG_FILE &
+    pid=$!
+    spinner $pid "Enabling NodeJS 20 Module"
+    wait $pid
+    dnf list installed nodejs &>>$LOG_FILE 
+    if [ $? -ne 0 ]; then  
+        # --- THE FIX STARTS HERE ---
+        # We run the install AND save the exit code to a file inside this block ( )
+        (
+            dnf install -y nodejs &>>$LOG_FILE
+            echo $? > /tmp/nodejs_status
+        ) & 
+        
+        pid=$!
+        spinner $pid "Installing NodeJS"
+        wait $pid
+        
+        # We read the code from the file so it is NEVER empty
+        EXIT_STATUS=$(cat /tmp/nodejs_status)
+    else
+        echo -e "NodeJS already exists$Y SKIPPING$N installation of NodeJS" | tee -a $LOG_FILE
+    fi
+    cd /app 
+    npm install &>>$LOG_FILE &
+    pid=$!
+    spinner $pid "Installing NodeJS Dependencies"
+    wait $pid
+    VALIDATE $? "Installing NodeJS Dependencies"
+}
+
+app_setup(){
+    mkdir -p /app &>>$LOG_FILE
+    VALIDATE $? "Setting up Application Directory"
+    curl -o /tmp/$app_name.zip https://roboshop-artifacts.s3.amazonaws.com/$app_name-v3.zip &>>$LOG_FILE &
+    pid=$!
+    spinner $pid "Downloading Application Code"
+    wait $pid
+    VALIDATE $? "Downloading Application Code"
+    cd /app
+    VALIDATE $? "Changing to application Directory"
+    rm -rf /app/* &>>$LOG_FILE
+    VALIDATE $? "Removing existing Application Code"
+    unzip -o /tmp/$app_name.zip &>>$LOG_FILE &
+    pid=$!
+    spinner $pid "Extracting Application Code"
+    wait $pid
+    VALIDATE $? "Extracting Application Code"
+}
+
+systemd_setup(){
+    cp $SCRIPT_DIR/$app_name.service /etc/systemd/system/$app_name.service &>>$LOG_FILE
+    VALIDATE $? "Copying SystemD $app_name Service File"
+
+    systemctl daemon-reload &>>$LOG_FILE &
+    pid=$!
+    spinner $pid "Reloading SystemD"
+    wait $pid
+    VALIDATE $? "Reloading SystemD"
+
+    systemctl enable $app_name &>>$LOG_FILE &
+    pid=$!
+    spinner $pid "Enabling $app_name Service"
+    wait $pid
+    VALIDATE $? "Enabling $app_name Service"
+}
+
+app_restart(){
+    systemctl restart $app_name &>>$LOG_FILE &
+    pid=$!
+    spinner $pid "Restarting $app_name Service"
+    wait $pid
+    VALIDATE $? "Restarting $app_name Service"
+}
 
 print_total_time(){
     END_TIME=$(date +%s)
