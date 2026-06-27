@@ -22,24 +22,17 @@ N="\e[0m"
 
 spinner() {
     local pid=$1
-    local text=$2
     local delay=0.1
     local i=0
-    
-    # 6-Stage complex wave moving across the dots
-    local spinstr=('·..' '.·.' '..·' '●..' '.●.' '..●')
+    local spinstr=('·..' '.·.' '..·' '◦..' '.◦.' '..◦')
     local frame_count=${#spinstr[@]}
-    
     tput civis 2>/dev/null 
-
-    while kill -0 "$pid" 2>/dev/null; do
-        # Format: message followed immediately by the moving dot frames
-        printf "\r\033[K%b%s" "$text" "${spinstr[$i]}"
+    while kill -0 $pid 2>/dev/null; do
+        printf "\r%s%s" "$2" "${spinstr[$i]}"
         
         i=$(( (i + 1) % frame_count ))
         sleep $delay
     done
-    
     printf "\r\033[K"
     tput cnorm 2>/dev/null 
 }
