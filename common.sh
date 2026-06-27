@@ -22,25 +22,29 @@ N="\e[0m"
 
 spinner() {
     local pid=$1
-    local delay=0.07 # Faster delay so Sonic actually looks like he is sprinting
+    local delay=0.05 # Ultra-low delay makes a 28-frame cycle blindingly smooth
     local i=0
     
-    # SONIC RUNNING LAYOUT: Fixed body (o) with legs cycling in a rapid clockwise blur
-    local spinstr=('o▘' 'o▝' 'o⏵' 'o▗' 'o▖' 'o⏴')
+    # 28-STAGE JAW-DROPPING RADAR CYCLE: High frame count for flawless transitions
+    local spinstr=(
+        '⠋' '⠙' '⠹' '⠸' '⠼' '⠴' '⠦' '⠧' '⠇' '⠏'  # Stage 1: Single outer trace
+        '⣎' '⣕' '⣪' '⣵' '⣟' '⣯' '⣷' '⣾' '⣽' '⣻'  # Stage 2: Dual orbital expansion
+        '⢆' '⢂' '⢁' '⡈' '⠠' '⠐' '⠈' '⢀'          # Stage 3: Smooth spiral dissolution
+    )
     local frame_count=${#spinstr[@]}
     
-    # Hide cursor safely
+    # Hide the cursor safely
     tput civis 2>/dev/null 
 
     while kill -0 "$pid" 2>/dev/null; do
-        # Keeps your original format logic completely intact: message...Sonic
+        # Keeps your original trusted logic completely intact
         printf "\r%s...%s" "$2" "${spinstr[$i]}"
         
         i=$(( (i + 1) % frame_count ))
         sleep $delay
     done
     
-    # Clear the trailing animation right before exit
+    # Wipe the trailing circle cleanly right before validation prints
     printf "\r\033[K"
     tput cnorm 2>/dev/null 
 }
