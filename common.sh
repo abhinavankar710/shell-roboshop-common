@@ -25,14 +25,13 @@ spinner() {
     local delay=0.1
     local i=0
     
-    # Complex 10-stage interlocking dense dot matrix
-    local spinstr=('⠋⠙⠹' '⠙⠹⠸' '⠹⠸⠼' '⠸⠼⠴' '⠼⠴⠦' '⠴⠦⠧' '⠦⠧⠇' '⠧⠇⠏' '⠇⠏⠋' '⠏⠋⠙')
+    # 8-Stage sweeping radial dot pulse
+    local spinstr=('⢄⢂⢁⡈' '⡈⢁⢂⢄' '⠠⠐⠈⢀' '⢀⠈⠐⠠' '⢄⢂⢁⡈' '⡈⢁⢂⢄' '⠠⠐⠈⢀' '⢀⠈⠐⠠')
     local frame_count=${#spinstr[@]}
     
     tput civis 2>/dev/null 
 
     while kill -0 $pid 2>/dev/null; do
-        # Keeps your original format logic completely intact
         printf "\r%s%s" "$2" "${spinstr[$i]}"
         i=$(( (i + 1) % frame_count ))
         sleep $delay
@@ -41,6 +40,7 @@ spinner() {
     printf "\r\033[K"
     tput cnorm 2>/dev/null 
 }
+
 
 
 VALIDATE(){
