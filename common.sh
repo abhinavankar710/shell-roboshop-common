@@ -73,7 +73,7 @@ nodejs_setup(){
         # We read the code from the file so it is NEVER empty
         EXIT_STATUS=$(cat /tmp/nodejs_status)
     else
-        echo -e "NodeJS already exists$Y SKIPPING$N installation of NodeJS" | tee -a $LOG_FILE
+        echo -e "NodeJS already exists...${Y}Skipping${N}" | tee -a $LOG_FILE
     fi
     cd /app 
     npm install &>>$LOG_FILE &
