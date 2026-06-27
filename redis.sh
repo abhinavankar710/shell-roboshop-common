@@ -37,7 +37,7 @@ if [ $? -ne 0 ]; then
     # --- THE FIX ENDS HERE ---
     
 else
-    echo -e "Redis already exists$Y SKIPPING$N installation of Redis" | tee -a $LOG_FILE
+    echo -e "Redis already exists...${Y}Skipping${N}" | tee -a $LOG_FILE
 fi
 
 sed -i -e 's/127.0.0.1/0.0.0.0/g' -e '/protected-mode/ c protected-mode no' /etc/redis/redis.conf &>>$LOG_FILE
