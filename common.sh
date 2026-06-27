@@ -25,18 +25,25 @@ spinner() {
     local text=$2
     local delay=0.1
     local i=0
-    local spinstr=('▏' '▎' '▍' '▌' '▋' '▊' '▉' '█' '▉' '▊' '▋' '▌' '▍' '▎')
+    
+    # Smooth quarter-circle circular frames
+    local spinstr=('◜' '◝' '◞' '◟')
     local frame_count=${#spinstr[@]}
+    
     tput civis 2>/dev/null 
+
     while kill -0 "$pid" 2>/dev/null; do
-        printf "\r%b...%s" "$text" "${spinstr[$i]}"
+        # Format layout: message...spinner (no spaces, no brackets)
+        printf "\r\033[K%b...%s" "$text" "${spinstr[$i]}"
         
         i=$(( (i + 1) % frame_count ))
         sleep $delay
     done
+    
     printf "\r\033[K"
     tput cnorm 2>/dev/null 
 }
+
 
 VALIDATE(){
     if [ $1 -ne 0 ]; then
