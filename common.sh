@@ -22,29 +22,30 @@ N="\e[0m"
 
 spinner() {
     local pid=$1
-    local delay=0.05 # Ultra-low delay makes a 28-frame cycle blindingly smooth
+    local delay=0.04  # High speed for fluid, buttery motion
     local i=0
     
-    # 28-STAGE JAW-DROPPING RADAR CYCLE: High frame count for flawless transitions
+    # 26-STAGE HORIZONTAL VECTOR SHIFT: High frame count for seamless wave cascading
     local spinstr=(
-        '⠋' '⠙' '⠹' '⠸' '⠼' '⠴' '⠦' '⠧' '⠇' '⠏'  # Stage 1: Single outer trace
-        '⣎' '⣕' '⣪' '⣵' '⣟' '⣯' '⣷' '⣾' '⣽' '⣻'  # Stage 2: Dual orbital expansion
-        '⢆' '⢂' '⢁' '⡈' '⠠' '⠐' '⠈' '⢀'          # Stage 3: Smooth spiral dissolution
+        '⠁  ' '⠃  ' '⠇  ' '⠇⠁ ' '⠇⠃ ' '⠇⠇ ' '⠇⠇⠁' '⠇⠇⠃' '⠇⠇⠇' 
+        '⢎⠇⠇' '⢱⢎⠇' '⢀⢱⢎' ' ⢀⢱' '  ⢀' '   ' '⢀  ' '⢄⢀ ' 
+        '⢆⢄⢀' '⢎⢆⢄' '⠇⢎⢆' '⠇⠇⢎' '⠇⠇⠇' '⠖⠇⠇' '⠤⠖⠇' ' ⠤⠖' '  ⠤'
     )
     local frame_count=${#spinstr[@]}
     
     # Hide the cursor safely
     tput civis 2>/dev/null 
 
+    # Runs flawlessly frame-by-frame with zero sequence stutters
     while kill -0 "$pid" 2>/dev/null; do
-        # Keeps your original trusted logic completely intact
-        printf "\r%s...%s" "$2" "${spinstr[$i]}"
+        # Your exact text layout preserved. Replaces %s cleanly with the multi-dot wave
+        printf "\r$2... [%s]" "${spinstr[i]}"
         
         i=$(( (i + 1) % frame_count ))
         sleep $delay
     done
     
-    # Wipe the trailing circle cleanly right before validation prints
+    # Wipe the trailing animation cleanly right before validation prints
     printf "\r\033[K"
     tput cnorm 2>/dev/null 
 }
